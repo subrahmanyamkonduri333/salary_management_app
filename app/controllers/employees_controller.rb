@@ -1,17 +1,39 @@
 class EmployeesController < ApplicationController
+  before_action :set_employee, only: [:show, :update, :destroy]
+
   def create
-    head :not_implemented
+    employee = Employee.new(employee_params)
+    if employee.save
+      render json: employee, status: :created
+    else
+      render json: { errors: employee.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   def show
-    head :not_implemented
+    render json: @employee, status: :ok
   end
 
   def update
-    head :not_implemented
+    if @employee.update(employee_params)
+      render json: @employee, status: :ok
+    else
+      render json: { errors: @employee.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   def destroy
-    head :not_implemented
+    @employee.destroy
+    head :no_content
+  end
+
+  private
+
+  def set_employee
+    @employee = Employee.find(params[:id])
+  end
+
+  def employee_params
+    params.permit(:full_name, :job_title, :country, :salary)
   end
 end
