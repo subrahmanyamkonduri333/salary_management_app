@@ -36,7 +36,7 @@ gem "image_processing", "~> 1.2"
 # gem "rack-cors"
 
 group :development, :test do
-  gem 'rspec-rails', '~> 6.1'
+  gem 'rspec-rails', '~> 8.0'
   gem 'rails-controller-testing'
   gem 'factory_bot_rails'
   gem 'shoulda-matchers', '~> 6.0'
