@@ -1,4 +1,5 @@
 class EmployeesController < ApplicationController
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
   before_action :set_employee, only: [:show, :update, :destroy]
 
   def create
@@ -35,5 +36,9 @@ class EmployeesController < ApplicationController
 
   def employee_params
     params.permit(:full_name, :job_title, :country, :salary)
+  end
+
+  def not_found
+  render json: { error: "Not found" }, status: :not_found
   end
 end

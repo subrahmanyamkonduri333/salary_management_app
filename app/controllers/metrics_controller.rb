@@ -1,5 +1,7 @@
 class MetricsController < ApplicationController
   def salary_by_country
+    return render json: { error: "country required" }, status: :bad_request if params[:country].blank?
+
     employees = Employee.where(country: params[:country])
 
     stats = {
@@ -12,6 +14,7 @@ class MetricsController < ApplicationController
   end
 
   def salary_by_job_title
+    return render json: { error: "job_title required" }, status: :bad_request if params[:job_title].blank?
     employees = Employee.where(job_title: params[:job_title])
 
     render json: {

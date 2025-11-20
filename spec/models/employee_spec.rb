@@ -1,25 +1,23 @@
 require 'rails_helper'
 
 RSpec.describe Employee, type: :model do
+  subject { build(:employee) }
+
   describe "validations" do
-    it "requires full_name" do
-      employee = Employee.new(full_name: nil)
-      expect(employee.valid?).to be_falsey
+    it { should validate_presence_of(:full_name) }
+    it { should validate_presence_of(:job_title) }
+    it { should validate_presence_of(:country) }
+    it { should validate_presence_of(:salary) }
+    it { should validate_numericality_of(:salary).is_greater_than(0) }
+
+    it "is invalid with negative salary" do
+      subject.salary = -100
+      expect(subject.valid?).to be_falsey
     end
 
-    it "requires job_title" do
-      employee = Employee.new(job_title: nil)
-      expect(employee.valid?).to be_falsey
-    end
-
-    it "requires country" do
-      employee = Employee.new(country: nil)
-      expect(employee.valid?).to be_falsey
-    end
-
-    it "requires salary" do
-      employee = Employee.new(salary: nil)
-      expect(employee.valid?).to be_falsey
+    it "is invalid with non-numeric salary" do
+      subject.salary = "abc"
+      expect(subject.valid?).to be_falsey
     end
   end
 end

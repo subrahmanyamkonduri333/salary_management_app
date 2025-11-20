@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe "Salary Calculation API", type: :request do
-  let(:employee_india)  { Employee.create!(full_name: "A", job_title: "Dev", country: "India", salary: 50000) }
-  let(:employee_usa)    { Employee.create!(full_name: "B", job_title: "Dev", country: "United States", salary: 50000) }
-  let(:employee_other)  { Employee.create!(full_name: "C", job_title: "Dev", country: "Germany", salary: 50000) }
+  let(:employee_india)  { create(:employee, country: "India") }
+  let(:employee_usa)    { create(:employee, country: "United States") }
+  let(:employee_other)  { create(:employee, country: "Brazil") }
 
   describe "GET /employees/:id/salary" do
-    it "applies 10% deduction for India" do
+    it "calculates deductions for India" do
       get "/employees/#{employee_india.id}/salary?gross=100000"
       body = JSON.parse(response.body)
 
@@ -14,7 +14,7 @@ RSpec.describe "Salary Calculation API", type: :request do
       expect(body["net"]).to eq(90000)
     end
 
-    it "applies 12% deduction for United States" do
+    it "calculates deductions for US" do
       get "/employees/#{employee_usa.id}/salary?gross=100000"
       body = JSON.parse(response.body)
 
@@ -22,12 +22,23 @@ RSpec.describe "Salary Calculation API", type: :request do
       expect(body["net"]).to eq(88000)
     end
 
-    it "applies no deduction for other countries" do
+    it "calculates no deductions for other countries" do
       get "/employees/#{employee_other.id}/salary?gross=100000"
       body = JSON.parse(response.body)
 
       expect(body["tds"]).to eq(0)
       expect(body["net"]).to eq(100000)
+    end
+
+    it "returns error for missing gross salary" do
+      get "/employees/#{employee_india.id}/salary"
+
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "returns 404 for invalid employee" do
+      get "/employees/999999/salary?gross=100000"
+      expect(response).to have_http_status(:not_found)
     end
   end
 end
